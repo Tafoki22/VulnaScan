@@ -1,7 +1,13 @@
-venv/
+# Python
 __pycache__/
 *.pyc
-*.log
-data/results.json  # Optional: if you don't want to commit scan history
-.idea/
+venv/
+.env
+
+# IDE
 .vscode/
+.idea/
+
+# Data (optional: exclude scan results)
+vulnscan/data/results.json
+vulnscan/data/scan_history.csv
