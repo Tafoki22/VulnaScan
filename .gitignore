@@ -1,0 +1,7 @@
+venv/
+__pycache__/
+*.pyc
+*.log
+data/results.json  # Optional: if you don't want to commit scan history
+.idea/
+.vscode/

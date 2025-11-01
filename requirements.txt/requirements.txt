@@ -1,0 +1,5 @@
+requests
+beautifulsoup4
+flask
+colorama
+requests>=2.25.0
