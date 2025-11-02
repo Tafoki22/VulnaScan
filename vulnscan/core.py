@@ -5,6 +5,25 @@ import os
 import csv
 from datetime import datetime
 
+# === MITIGATION KNOWLEDGE BASE ===
+VULN_GUIDANCE = {
+    "missing_headers": {
+        "Content-Security-Policy": "Add: Content-Security-Policy: default-src 'self'; script-src 'self'",
+        "Strict-Transport-Security": "Add: Strict-Transport-Security: max-age=31536000; includeSubDomains",
+        "X-Content-Type-Options": "Add: X-Content-Type-Options: nosniff",
+        "X-Frame-Options": "Add: X-Frame-Options: DENY",
+        "Permissions-Policy": "Add: Permissions-Policy: camera=(), microphone=(), geolocation=()"
+    },
+    "clickjacking": "Add 'X-Frame-Options: DENY' or 'SAMEORIGIN' in HTTP response headers.",
+    "xss": "Sanitize user input, encode output, and implement a strong Content Security Policy (CSP).",
+    "sql_injection": "Use parameterized queries or ORM. Never concatenate user input into SQL strings.",
+    "insecure_cookies": "Set 'Secure', 'HttpOnly', and 'SameSite' flags on all cookies.",
+    "server_info": "Remove or obfuscate the 'Server' header in your web server configuration.",
+    "cors": "Avoid 'Access-Control-Allow-Origin: *'. Use an allowlist of trusted origins instead.",
+    "security_txt": "Create /.well-known/security.txt to guide ethical hackers on how to report issues.",
+    "robots_txt": "Avoid listing sensitive paths in robots.txt. Use authentication instead of obscurity."
+}
+
 class VulnaScanner:
     def __init__(self, data_dir="vulnscan/data"):
         self.data_dir = data_dir
@@ -42,7 +61,6 @@ class VulnaScanner:
 
     def scan(self, url):
         original_input = url
-        # Auto-scheme detection
         if not url.startswith(("http://", "https://")):
             url = "https://" + url
             try:
@@ -59,7 +77,10 @@ class VulnaScanner:
             "sql_injection": "N/A",
             "insecure_cookies": "N/A",
             "missing_headers": "N/A",
-            "server_info": "N/A"
+            "server_info": "N/A",
+            "cors": "N/A",
+            "security_txt": "N/A",
+            "robots_txt": "N/A"
         }
 
         result["xss"] = self._check_xss(url)
@@ -68,6 +89,9 @@ class VulnaScanner:
         result["insecure_cookies"] = self._check_cookie_security(url)
         result["missing_headers"] = self._check_security_headers(url)
         result["server_info"] = self._check_server_info(url)
+        result["cors"] = self._check_cors(url)
+        result["security_txt"] = self._check_security_txt(url)
+        result["robots_txt"] = self._check_robots_txt(url)
 
         self.scan_history.append(result)
         self._save_history()
@@ -122,7 +146,8 @@ class VulnaScanner:
                 "Content-Security-Policy",
                 "X-Content-Type-Options",
                 "X-Frame-Options",
-                "Strict-Transport-Security"
+                "Strict-Transport-Security",
+                "Permissions-Policy"
             }
 
             for header in required:
@@ -145,6 +170,47 @@ class VulnaScanner:
             return "Not disclosed"
         except Exception as e:
             return self._format_error(e)
+
+    def _check_cors(self, url):
+        try:
+            res = requests.get(url, timeout=10)
+            acao = res.headers.get("Access-Control-Allow-Origin", "")
+            return "Risky: Wildcard (*) allowed" if acao == "*" else "Safe"
+        except Exception as e:
+            return self._format_error(e)
+
+    def _check_security_txt(self, url):
+        try:
+            base = url.rstrip('/')
+            res = requests.get(f"{base}/.well-known/security.txt", timeout=5)
+            return "Found" if res.status_code == 200 else "Missing"
+        except:
+            return "Missing"
+
+    def _check_robots_txt(self, url):
+        try:
+            base = url.rstrip('/')
+            res = requests.get(f"{base}/robots.txt", timeout=5)
+            if res.status_code == 200:
+                text = res.text.lower()
+                sensitive = ["admin", "login", "backup", "config", "wp-admin", "secret"]
+                exposed = [s for s in sensitive if s in text]
+                return f"Exposed: {exposed}" if exposed else "No sensitive paths"
+            return "Not found"
+        except:
+            return "Not found"
+
+    def get_mitigation_tips(self, result):
+        """Return user-friendly mitigation tips based on scan result."""
+        tips = []
+        for key, value in result.items():
+            if key == "missing_headers" and isinstance(value, list):
+                for header in value:
+                    if header in VULN_GUIDANCE["missing_headers"]:
+                        tips.append(f"• {VULN_GUIDANCE['missing_headers'][header]}")
+            elif key in VULN_GUIDANCE and value not in ["Safe", "All secure", "Not disclosed", "N/A", "Found"]:
+                tips.append(f"• {VULN_GUIDANCE[key]}")
+        return tips if tips else ["• No critical issues found. Keep up the good work!"]
 
     def export_to_csv(self, csv_path="vulnscan/data/scan_history.csv"):
         if not self.scan_history:
