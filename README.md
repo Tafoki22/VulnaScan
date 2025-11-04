@@ -1,45 +1,63 @@
 # VulnaScan 🛡️
 
-A lightweight **desktop vulnerability scanner** for educational use and authorized security testing.  
-Built with Python and Tkinter, VulnaScan helps developers, students, and security enthusiasts identify common web misconfigurations and vulnerabilities.
+A lightweight **desktop vulnerability scanner** for educational use and **authorized security testing**.  
+Built with **Python**, **customtkinter**, and **requests**, VulnaScan helps developers, students, and security enthusiasts identify common web misconfigurations — with a sleek, modern GUI.
 
-> ⚠️ **For authorized use only.** Never scan systems you don’t own or lack explicit permission to test.
+> ⚠️ **ETHICAL USE ONLY**  
+> **Never scan systems you don’t own or lack explicit written permission to test.**  
+> Unauthorized use may violate the **Computer Fraud and Abuse Act (CFAA)** or other laws.
+
+---
+
+## 🖼️ GUI Preview
+
+![VulnaScan GUI](screenshot.png)  
+*Modern dark-themed interface with real-time logging, severity indicators, and mitigation tips.*
+
+> 💡 *Replace `screenshot.png` with your actual screenshot (e.g., `ABC.png` or `2025.png`) and commit it to your repo!*
 
 ---
 
 ## 🔍 Features
 
-- **Passive & active checks**:
-  - Missing security headers (`CSP`, `HSTS`, `X-Frame-Options`, etc.)
-  - Clickjacking (missing `X-Frame-Options`)
-  - Reflected XSS (basic payload test)
-  - SQL Injection (error-based detection)
-  - Insecure cookies (missing `Secure` flag)
-  - Server version disclosure
-- **Auto HTTPS fallback**: Tries `https://` first, falls back to `http://` if needed
-- **User-friendly GUI** with real-time logging
-- **Ethical disclaimer** on startup
-- **Scan history** saved to `results.json`
-- **Export results to CSV** for reporting
+- **Vulnerability Checks**:
+  - 🔒 Missing security headers (`CSP`, `HSTS`, `X-Frame-Options`, `Permissions-Policy`, etc.)
+  - 👁️ Clickjacking (missing `X-Frame-Options`)
+  - ⚠️ Reflected XSS (basic payload test)
+  - 🧨 SQL Injection (error-based detection)
+  - 🍪 Insecure cookies (missing `Secure`, `HttpOnly` flags)
+  - 📡 Server info disclosure
+  - 🌐 Risky CORS (`Access-Control-Allow-Origin: *`)
+  - 📄 Missing `security.txt` or exposed paths in `robots.txt`
+
+- **User Experience**:
+  - ✅ **Auto HTTPS fallback** (`https://` → `http://`)
+  - 🎨 **Dark-themed modern GUI** with icons & severity levels (High/Medium/Low)
+  - 📋 **Real-time scan log** with color-coded results
+  - 💡 **Mitigation tips** based on findings
+  - 🕒 **Scan history** saved to `vulnscan/data/results.json`
+  - 📤 **Export to CSV** for reporting
+  - 📋 **Copy full report** to clipboard
+  - 🚀 **Progress bar** during scanning
 
 ---
 
 ## ⚠️ Ethical & Legal Notice
 
-VulnaScan is designed for:
-- Learning cybersecurity concepts
-- Testing your own websites or labs
-- Authorized penetration testing
+VulnaScan is intended **only** for:
+- ✅ Learning web security concepts  
+- ✅ Testing **your own websites or labs**  
+- ✅ **Authorized** penetration testing  
 
-**Do not use this tool against systems you do not own or lack written permission to test.**  
-Unauthorized scanning may violate laws such as the **Computer Fraud and Abuse Act (CFAA)** or local cybersecurity regulations.
+**Do NOT use against any system without explicit permission.**  
+Misuse may result in legal consequences.
 
 ---
 
 ## 🛠️ Requirements
 
-- Python 3.7 or higher
-- `requests` library
+- Python 3.7+
+- `pip`
 
 ---
 

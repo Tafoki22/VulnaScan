@@ -1,4 +1,3 @@
-# vulnscan/core.py
 import requests
 import json
 import os
@@ -24,12 +23,29 @@ VULN_GUIDANCE = {
     "robots_txt": "Avoid listing sensitive paths in robots.txt. Use authentication instead of obscurity."
 }
 
+# === SEVERITY MAPPING ===
+VULNERABILITY_SEVERITY = {
+    "xss": "High",
+    "sql_injection": "High",
+    "clickjacking": "Medium",
+    "insecure_cookies": "Medium",
+    "missing_headers": "Medium",
+    "server_info": "Low",
+    "cors": "Medium",
+    "security_txt": "Low",
+    "robots_txt": "Low"
+}
+
 class VulnaScanner:
     def __init__(self, data_dir="vulnscan/data"):
         self.data_dir = data_dir
         os.makedirs(self.data_dir, exist_ok=True)
         self.results_file = os.path.join(self.data_dir, "results.json")
-        self.scan_history = self._load_history()
+        try:
+            self.scan_history = self._load_history()
+        except Exception as e:
+            print(f"[!] Failed to load scan history: {e}. Starting fresh.")
+            self.scan_history = []
 
     def _load_history(self):
         if not os.path.exists(self.results_file):
@@ -58,6 +74,9 @@ class VulnaScanner:
             return "Domain not found"
         else:
             return "Scan interrupted"
+
+    def get_severity(self, check_name):
+        return VULNERABILITY_SEVERITY.get(check_name, "Info")
 
     def scan(self, url):
         original_input = url
@@ -97,6 +116,7 @@ class VulnaScanner:
         self._save_history()
         return result
 
+    # === CHECK METHODS ===
     def _check_xss(self, url):
         try:
             payload = "<script>alert('XSS')</script>"
@@ -201,7 +221,6 @@ class VulnaScanner:
             return "Not found"
 
     def get_mitigation_tips(self, result):
-        """Return user-friendly mitigation tips based on scan result."""
         tips = []
         for key, value in result.items():
             if key == "missing_headers" and isinstance(value, list):
