@@ -47,6 +47,11 @@ env/
 .venv/
 ENV/
 
+# Build artifacts
+dist/
+build/
+*.spec
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -76,3 +81,11 @@ Thumbs.db
 
 # Executables (optional – omit if you want to share .exe)
 *.exe
+
+# Dev-only theme files
+dark-red.json
+ultra-dark.json
+
+# Data (user-specific)
+vulnscan/data/
+!vulnscan/data/.gitkeep

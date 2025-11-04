@@ -11,10 +11,8 @@ Built with **Python**, **customtkinter**, and **requests**, VulnaScan helps deve
 
 ## 🖼️ GUI Preview
 
-![VulnaScan GUI](screenshot.png)  
+![VulnaScan GUI](Screenshot1.png, Screenshort2.png)  
 *Modern dark-themed interface with real-time logging, severity indicators, and mitigation tips.*
-
-> 💡 *Replace `screenshot.png` with your actual screenshot (e.g., `ABC.png` or `2025.png`) and commit it to your repo!*
 
 ---
 
